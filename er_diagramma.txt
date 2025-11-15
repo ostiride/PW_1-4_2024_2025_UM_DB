@@ -1,0 +1,152 @@
+erDiagram
+    PASSEGGERO {
+        int ID_Passeggero PK
+        string Nome
+        string Cognome
+        string Email UK
+        string Telefono
+    }
+
+    BIGLIETTO {
+        int ID_Biglietto PK
+        datetime DataEmissione
+        decimal PrezzoPagato
+        string PostoAssegnato
+        int ID_Passeggero FK
+        int ID_Viaggio FK
+        int ID_Tariffa FK
+        int Ordine_Fermata_Partenza "FK a FERMATA.Ordine (Salita)"
+        int Ordine_Fermata_Arrivo "FK a FERMATA.Ordine (Discesa)"
+    }
+
+    VIAGGIO {
+        int ID_Viaggio PK
+        datetime DataOraPartenzaPrevista "Orario prima fermata (Ordine=1)"
+        datetime DataOraArrivoPrevista "Orario ultima fermata"
+        string StatoViaggio
+        int ID_Tratta FK
+        int ID_Mezzo FK
+    }
+
+    MEZZO {
+        int ID_Mezzo PK
+        string Matricola UK
+        string Modello
+        int CapacitaMassima
+    }
+
+    TRATTA {
+        int ID_Tratta PK
+        string NomeTratta
+        string TipoServizio
+    }
+
+    STAZIONE {
+        int ID_Stazione PK
+        string NomeStazione
+        string Citta
+        string Indirizzo
+    }
+
+    FERMATA {
+        int ID_Tratta PK, FK
+        int Ordine PK
+        int ID_Stazione FK
+        int KmProgressivi
+        boolean SuRichiesta "Indica se la fermata è opzionale"
+        int TempoArrivoRelativo "Minuti da VIAGGIO.DataOraPartenzaPrevista"
+        int TempoPartenzaRelativo "Minuti da VIAGGIO.DataOraPartenzaPrevista"
+    }
+
+    DIPENDENTE {
+        int ID_Dipendente PK
+        string Matricola UK
+        string Nome
+        string Cognome
+        string Ruolo
+    }
+
+    ASSEGNAZIONE_TURNO {
+        int ID_Assegnazione PK
+        int ID_Viaggio FK
+        int ID_Dipendente FK
+        string Ruolo_Assegnato
+        int Ordine_Fermata_Inizio
+        int Ordine_Fermata_Fine
+    }
+    
+    MANUTENZIONE {
+        int ID_Manutenzione PK
+        int ID_Mezzo FK
+        datetime DataInizio
+        datetime DataFinePrevista
+        string TipoManutenzione
+    }
+
+    TARIFFA {
+        int ID_Tariffa PK
+        string NomeTariffa "es. Economy, Flex"
+        string Descrizione
+        string CondizioniRimborSO
+    }
+
+    PAGAMENTO {
+        int ID_Pagamento PK
+        datetime DataOraPagamento
+        decimal Importo
+        string MetodoPagamento
+        string StatoPagamento
+        int ID_Biglietto FK "Nullable"
+        int ID_Abbonamento FK "Nullable"
+    }
+
+    EVENTO_VIAGGIO {
+        int ID_Evento PK
+        int ID_Viaggio FK
+        int ID_Fermata FK
+        datetime TimestampEvento
+        string TipoEvento
+        string Descrizione
+    }
+
+    %% --- NUOVE ENTITA' PER ABBONAMENTI ---
+
+    CATALOGO_ABBONAMENTI {
+        int ID_Catalogo PK
+        int ID_Stazione_A FK "FK Stazione (Origine)"
+        int ID_Stazione_B FK "FK Stazione (Destinazione)"
+        decimal Prezzo_Mensile
+        decimal Prezzo_Semestrale
+        decimal Prezzo_Annuale
+    }
+
+    ABBONAMENTO {
+        int ID_Abbonamento PK
+        int ID_Passeggero FK "FK Passeggero"
+        int ID_Catalogo FK "FK Catalogo_Abbonamenti"
+        string TipoDurata "Mensile, Semestrale, Annuale"
+        date DataInizioValidita
+        date DataFineValidita
+    }
+
+    %% --- RELAZIONI ---
+    PASSEGGERO ||--|{ BIGLIETTO : "acquista"
+    VIAGGIO ||--|{ BIGLIETTO : "include"
+    MEZZO ||--|{ VIAGGIO : "effettua"
+    TRATTA ||--|{ VIAGGIO : "definisce"
+    TRATTA ||--|{ FERMATA : "comprende"
+    STAZIONE ||--|{ FERMATA : "è_presente_in"
+    VIAGGIO ||--|{ ASSEGNAZIONE_TURNO : "ha_assegnato"
+    DIPENDENTE ||--|{ ASSEGNAZIONE_TURNO : "svolge"
+    MEZZO ||--|{ MANUTENZIONE : "è_in_manutenzione"
+    TARIFFA ||--|{ BIGLIETTO : "definisce"
+    VIAGGIO ||--|{ EVENTO_VIAGGIO : "subisce"
+    FERMATA }o--|{ EVENTO_VIAGGIO : "avviene_a"
+
+    %% --- RELAZIONI ABBONAMENTI E PAGAMENTI ---
+    PASSEGGERO ||--|{ ABBONAMENTO : "sottoscrive"
+    CATALOGO_ABBONAMENTI ||--|{ ABBONAMENTO : "è_venduto_come"
+    STAZIONE }|--|| CATALOGO_ABBONAMENTI : "è_Stazione_A"
+    STAZIONE }|--|| CATALOGO_ABBONAMENTI : "è_Stazione_B"
+    BIGLIETTO }o--|| PAGAMENTO : "è_pagato_con (o)"
+    ABBONAMENTO }o--|| PAGAMENTO : "è_pagato_con (o)"
