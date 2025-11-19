@@ -7,9 +7,13 @@ Questo progetto nasce per gestire tutti i file necessari per il project work bas
 ## Contenuto
 
 Diagramma_ER_PW.png -- Diagramma ER che mostra solo entità e associazioni
+
 Diagramma_ER_PW_con_attributi.png -- Diagramma ER con attributi
+
 README.md
+
 db_pw_umbria_mobilita.sql -- Database del progetto completo di dati
+
 query_sql_pw.sql -- 
 
 ## Funzionalità supportate
