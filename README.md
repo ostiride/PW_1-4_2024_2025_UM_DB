@@ -14,7 +14,7 @@ README.md
 
 db_pw_umbria_mobilita.sql -- Database del progetto completo di dati
 
-query_sql_pw.sql -- 
+query_sql_pw.sql --  Query di esempio
 
 ## Funzionalità supportate
 1.	Recuperare il personale assegnato ad un viaggio.
